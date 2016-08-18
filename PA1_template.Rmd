@@ -82,3 +82,25 @@ median(imputeDailySum$x)
 ```
 The new data results in the data set following a much more normal distribution.
 
+## Are there differences in activity patterns between weekdays and weekends?
+
+1. Create a new factor variable in the dataset with two levels -- "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
+```{r}
+assign("weekData", imputeData)
+weekend=list("Saturday","Sunday")
+weekData$weekend <- ifelse(weekdays(as.POSIXlt(imputeData$date)) %in% weekend, "weekend", "weekday")
+```
+
+2. Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis).
+```{r}
+weekendData <- weekData[weekData$weekend == "weekend",]
+weekdayData <- weekData[weekData$weekend == "weekday",]
+
+par(mfrow=c(2,1))
+
+weekendSum <- aggregate(weekendData$steps, by = list(weekendData$interval), FUN = sum, na.rm = TRUE)
+plot(weekendSum$Group.1, weekendSum$x, type = "l", xlab = "5-minute interval", ylab = "average number of steps", main="Weekend Steps")
+
+weekdaySum <- aggregate(weekdayData$steps, by = list(weekdayData$interval), FUN = sum, na.rm = TRUE)
+plot(weekdaySum$Group.1, weekdaySum$x, type = "l", xlab = "5-minute interval", ylab = "average number of steps", main = "Weekday Steps")
+```

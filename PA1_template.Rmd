@@ -5,6 +5,8 @@ date: "18 August 2016"
 output: html_document
 ---
 
+## Loading and preprocessing the data
+
 1. Load the data
 ```{r}
 url <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
@@ -16,9 +18,37 @@ if (!file.exists(filename)) {
 if (!file.exists(unzippedFilename)) {
   unzip(filename)
 }
-data <- read.csv(unzippedFilename)
+activityData <- read.csv(unzippedFilename)
 ```
+
 2. Process / transform the data
 ```{r}
-summary(data)
+dailySum <- aggregate(activityData$steps, by = list(activityData$date), FUN = sum, na.rm = TRUE)
+intervalSum <- aggregate(activityData$steps, by = list(activityData$interval), FUN = sum, na.rm = TRUE)
+```
+
+## What is mean total number of steps taken per day?
+
+1. Histogram of total steps each day
+```{r}
+hist(dailySum$x, main="Histogram of total steps daily")
+```
+
+2. Calculate mean and median total number of steps taken per day
+```{r}
+mean(dailySum$x, na.rm = TRUE)
+median(dailySum$x, na.rm = TRUE)
+```
+
+## What is the average daily activity pattern?
+
+1. Time series plot of the 5-minute interval and the average number of steps taken, averaged across all days
+```{r}
+plot(intervalSum$Group.1, intervalSum$x, type="l", xlab="5-minute interval", ylab="average number of steps")
+```
+
+2. Which 5-minute interval, on average, contains the maximum number of steps?
+```{r}
+maxIndex <- which.max(intervalSum$x)
+intervalSum$Group.1[maxIndex]
 ```
